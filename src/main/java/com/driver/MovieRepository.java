@@ -4,28 +4,24 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @Repository
 public class MovieRepository {
-    HashMap<String, Movie> movieDb = new HashMap<>();
-    HashMap<String, Director> directorDb = new HashMap<>();
-    HashMap<String, ArrayList<String>> directorMoviePairDb = new HashMap<String, ArrayList<String>>();
+    HashMap<String,Movie> movieDb = new HashMap<>();
+    HashMap<String,Director> directorDb = new HashMap<>();
+    HashMap<String, ArrayList<String>> movieDirectorPairDb = new HashMap<>();
 
-
-    public void addMovie(Movie movie) {
-        movieDb.put(movie.getMovieName(), movie);
+    public void addMovie(Movie movie){
+        movieDb.put(movie.getName(),movie);
     }
-
-    public void addDirector(Director director) {
-        directorDb.put(director.getDirectorName(), director);
+    public void addDirector(Director director){
+        directorDb.put(director.getName(),director);
+        movieDirectorPairDb.put(director.getName(),new ArrayList<>());
     }
-
-    public void addMovieDirectorPair(String movie, String director) {
-        if(!directorMoviePairDb.containsKey(movie)){
-            directorMoviePairDb.put(director,new ArrayList<>());
-        }
-        directorMoviePairDb.get(director).add(movie);
+    public void addMovieDirectorPair(String movie,String director){
+        if(!movieDirectorPairDb.containsKey(director))
+            movieDirectorPairDb.put(director,new ArrayList<>());
+        movieDirectorPairDb.get(director).add(movie);
     }
     public Movie getMovieByName(String name){
         return movieDb.get(name);
@@ -33,35 +29,30 @@ public class MovieRepository {
     public Director getDirectorByName(String name){
         return directorDb.get(name);
     }
-    public List<String> getMoviesByDirectorName(String name){
-        return directorMoviePairDb.get(name);
+    public ArrayList<String> getMoviesByDirectorName(String name){
+        return movieDirectorPairDb.get(name);
     }
-
-    public List<String> findAllMovies() {
+    public ArrayList<String> findAllMovies(){
         ArrayList<String> movies = new ArrayList<>();
-        for(Movie movie : movieDb.values()){
-            movies.add(movie.getMovieName());
+        for(Movie movie: movieDb.values()){
+            movies.add(movie.getName());
         }
         return movies;
     }
-
-    public void deleteDirectorByName(String name) {
+    public void deleteDirectorByName(String name){
         directorDb.remove(name);
-        //delete movies related to that director in movieDb also
-        //delete director in directorMoviepairDb also
-        for(String movie : directorMoviePairDb.get(name)){
+        for(String movie: movieDirectorPairDb.get(name)){
             movieDb.remove(movie);
         }
-        directorMoviePairDb.remove(name);
+        movieDirectorPairDb.remove(name);
     }
-
-    public void deleteAllDirectors() {
+    public void deleteAllDirectors(){
         directorDb.clear();
-        for(ArrayList<String> movies : directorMoviePairDb.values()){
-            for(String movie : movies){
+        for(ArrayList<String> movies : movieDirectorPairDb.values()){
+            for(String movie: movies){
                 movieDb.remove(movie);
             }
         }
-        directorMoviePairDb.clear();
+        movieDirectorPairDb.clear();
     }
 }
